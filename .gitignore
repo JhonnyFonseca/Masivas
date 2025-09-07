@@ -1,0 +1,69 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+
+# Archivos de datos CSV grandes
+*.csv
+SECOP_*.csv
+datos_*.csv
+*.xlsx
+*.xls
+
+# Archivos de base de datos MySQL (excluir archivos internos de MySQL)
+*.db
+*.sqlite
+*.sqlite3
+contratos/*.sock
+contratos/auto.cnf
+contratos/binlog.*
+contratos/ib_*
+contratos/*.log
+contratos/**/mysql/
+contratos/mysql.sock
+contratos/mysqld.sock
+contratos/*.pid
+contratos/*.err
+contratos/
+
+# Configuración de entorno
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config/local.js
+
+# Logs
+logs/
+*.log
+
+# Archivos temporales de importación
+import_*.log
+error_*.log
+
+# IDEs y editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Scripts de prueba y debug
+test*.js
+debug*.js
+sample*.csv
+
+# Archivos de respaldo
+*.bak
+*.backup
+*.old
