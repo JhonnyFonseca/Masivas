@@ -14,20 +14,6 @@ const dbConfig = {
 
 const pool = mysql.createPool(dbConfig);
 
-async function testConnection() {
-    try {
-        const connection = await pool.getConnection();
-        console.log('✅ Conexión a MySQL exitosa');
-        console.log(`📊 Base de datos: ${dbConfig.database}`);
-        console.log(`🏠 Host: ${dbConfig.host}:${dbConfig.port}`);
-        connection.release();
-        return true;
-    } catch (error) {
-        console.error('❌ Error conectando a MySQL:', error.message);
-        return false;
-    }
-}
-
 async function executeQuery(sql, params = []) {
     try {
         const [rows] = await pool.execute(sql, params);
@@ -56,20 +42,6 @@ async function executeTransaction(queries) {
         await connection.rollback();
         connection.release();
         throw error;
-    }
-}
-
-async function testConnection() {
-    try {
-        const connection = await pool.getConnection();
-        console.log('✅ Conexión a MySQL exitosa');
-        console.log(`📊 Base de datos: ${dbConfig.database}`);
-        console.log(`🏠 Host: ${dbConfig.host}:${dbConfig.port}`);
-        connection.release();
-        return true;
-    } catch (error) {
-        console.error('❌ Error conectando a MySQL:', error.message);
-        return false;
     }
 }
 
