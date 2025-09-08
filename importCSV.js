@@ -12,8 +12,35 @@ class CompleteSecopImporter {
         this.startTime = Date.now();
         this.batchCount = 0;
         this.currentBatch = [];
-        this.batchSize = 100;
+        this.batchSize = 50;
         this.processing = false;
+    }
+
+    loadCheckpoint() {
+        try {
+            if (fs.existsSync(this.checkpointFile)) {
+                const data = JSON.parse(fs.readFileSync(this.checkpointFile, 'utf8'));
+                this.lastProcessedRow = data.lastProcessedRow || 0;
+                this.totalProcessed = data.totalProcessed || 0;
+                console.log(`Resumiendo desde la fila: ${this.lastProcessedRow.toLocaleString()}`);
+            }
+        } catch (error) {
+            console.log('No se pudo cargar checkpoint, iniciando desde cero');
+        }
+    }
+
+    // Guardar checkpoint
+    saveCheckpoint(currentRow) {
+        try {
+            const checkpoint = {
+                lastProcessedRow: currentRow,
+                totalProcessed: this.totalProcessed,
+                timestamp: new Date().toISOString()
+            };
+            fs.writeFileSync(this.checkpointFile, JSON.stringify(checkpoint, null, 2));
+        } catch (error) {
+            console.error('Error guardando checkpoint:', error.message);
+        }
     }
 
     truncate(str, maxLength) {
@@ -417,11 +444,11 @@ class CompleteSecopImporter {
         const elapsed = (Date.now() - this.startTime) / 1000;
         const rate = this.totalProcessed / elapsed;
         
-        if (this.batchCount % 5 === 0) {
-            if (this.entidadCache.size > 2000) {
+        if (this.batchCount % 2 === 0) {  
+            if (this.entidadCache.size > 1000) {  
                 this.entidadCache.clear();
             }
-            if (this.proveedorCache.size > 2000) {
+            if (this.proveedorCache.size > 1000) {
                 this.proveedorCache.clear();
             }
         }
@@ -439,11 +466,19 @@ class CompleteSecopImporter {
                 .pipe(csv({ separator: ',', skipEmptyLines: true }))
                 .on('data', async (row) => {
                     totalRows++;
+
+                    if (totalRows <= this.lastProcessedRow) {
+                        return;     
+                    }
+
                     this.currentBatch.push(row);
 
                     if (this.currentBatch.length >= this.batchSize) {
                         stream.pause();
                         await this.processBatch();
+                        if (totalRows % 1000 === 0) {
+                            this.saveCheckpoint(totalRows);
+                        }
                         stream.resume();
                     }
 
