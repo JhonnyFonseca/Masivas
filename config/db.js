@@ -78,7 +78,6 @@ async function executeTransaction(queries) {
 
 module.exports = {
     pool,
-    testConnection,
     executeQuery,
     executeTransaction,
     dbConfig
